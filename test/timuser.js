@@ -37,9 +37,29 @@ describe("/users route", () => {
   	.set("Authorization", `Bearer ${token}`)
   	.send(data);
 	userId = res.body.id;
+    expect(res.status).to.eq(201);
+    expect(res.body.id).to.eq(userId);
    
     
   });
+
+  it('GET /users/: id | hämta användaren vi nyss skapade', async () => {
+	const res = await request.get(`users/${userId}?access-token=${token}`);
+    expect(res.body.id).to.eq(userId);
+   });
+
+  it("PUT /users/:id | byt användaren", async () => {
+	const data = { name: "User updated" };
+
+	const res = await request
+  	.put(`users/${userId}`)
+  	.set("Authorization", `Bearer ${token}`)
+  	.send(data);
+    expect(res.body.name).to.eq('User updated');
+    expect(res.body).to.include(data);
+	
+  });
+
 it("DELETE /users/:id | användare vi nyss skapade", async () => {
 	const res = await request
   	.delete(`users/${userId}`)
@@ -51,29 +71,17 @@ it("DELETE /users/:id (Negative)", async () => {
 	const res = await request
   	.delete(`users/${userId}`)
   	.set("Authorization", `Bearer ${token}`);
+    expect(res.body.message).to.eq("Resource not found");
 	
   });
 
 it("GET /users/:id (Negative)", async () => {
 	const res = await request.get(`users/${userId}`);
-	
+	expect(res.body.message).to.eq("Resource not found");
   });
 
 
-  it('GET /users/: id | hämta användaren vi nyss skapade', async () => {
-	const res = await request.get(`users/${userId}?access-token=${token}`);
-
-   });
-
-  it("PUT /users/:id | byt användaren", async () => {
-	const data = { name: "User updated" };
-
-	const res = await request
-  	.put(`users/${userId}`)
-  	.set("Authorization", `Bearer ${token}`)
-  	.send(data);
-	
-  });
+  
 
   
     });
